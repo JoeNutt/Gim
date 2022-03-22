@@ -453,7 +453,7 @@ func (e *Editor) drawRows(b *strings.Builder) {
 				line = runewidth.Truncate(line, e.screenCols, "")
 				hl = hl[:utf8.RuneCountInString(line)]
 			}
-			currentColor := -1 // keep track of color to detect color change
+			currentcolour := -1 // keep track of colour to detect colour change
 			for i, r := range []rune(line) {
 				if unicode.IsControl(r) {
 					// deal with non-printable characters (e.g. Ctrl-A)
@@ -461,29 +461,29 @@ func (e *Editor) drawRows(b *strings.Builder) {
 					if r < 26 {
 						sym = '@' + r
 					}
-					b.WriteString("\x1b[7m") // use inverted colors
+					b.WriteString("\x1b[7m") // use inverted colours
 					b.WriteRune(sym)
 					b.WriteString("\x1b[m") // reset all formatting
-					if currentColor != -1 {
-						// restore the current color
-						b.WriteString(fmt.Sprintf("\x1b[%dm", currentColor))
+					if currentcolour != -1 {
+						// restore the current colour
+						b.WriteString(fmt.Sprintf("\x1b[%dm", currentcolour))
 					}
 				} else if hl[i] == hlNormal {
-					if currentColor != -1 {
-						currentColor = -1
+					if currentcolour != -1 {
+						currentcolour = -1
 						b.WriteString("\x1b[39m")
 					}
 					b.WriteRune(r)
 				} else {
-					color := syntaxToColor(hl[i])
-					if color != currentColor {
-						currentColor = color
-						b.WriteString(fmt.Sprintf("\x1b[%dm", color))
+					colour := syntaxTocolour(hl[i])
+					if colour != currentcolour {
+						currentcolour = colour
+						b.WriteString(fmt.Sprintf("\x1b[%dm", colour))
 					}
 					b.WriteRune(r)
 				}
 			}
-			b.WriteString("\x1b[39m") // reset to normal color
+			b.WriteString("\x1b[39m") // reset to normal colour
 		}
 		b.Write([]byte("\x1b[K")) // clear the line
 		b.Write([]byte("\r\n"))
@@ -491,7 +491,7 @@ func (e *Editor) drawRows(b *strings.Builder) {
 }
 
 func (e *Editor) drawStatusBar(b *strings.Builder) {
-	b.Write([]byte("\x1b[7m"))      // switch to inverted colors
+	b.Write([]byte("\x1b[7m"))      // switch to inverted colours
 	defer b.Write([]byte("\x1b[m")) // switch back to normal formatting
 	filename := e.filename
 	if utf8.RuneCountInString(filename) == 0 {
@@ -938,7 +938,7 @@ func (e *Editor) updateHighlight(row *Row) {
 	}
 }
 
-func syntaxToColor(hl uint8) int {
+func syntaxTocolour(hl uint8) int {
 	switch hl {
 	case hlComment, hlMlComment:
 		return 90
